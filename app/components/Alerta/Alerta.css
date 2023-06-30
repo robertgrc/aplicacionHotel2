@@ -1,0 +1,17 @@
+.alerta-error {
+    margin-top: 15px;
+    background: linear-gradient(to right, #d11c1c, #9f0505);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.alerta-exito {
+    margin-top: 15px;
+    background: linear-gradient(to right, #2785e9, #0d62bd);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
