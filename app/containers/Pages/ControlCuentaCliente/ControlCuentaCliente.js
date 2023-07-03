@@ -1,3 +1,4 @@
+
 /* eslint-disable no-else-return */
 
 import { sortBy } from 'lodash';
@@ -368,6 +369,7 @@ console.log('cuentas***', cuentas);
            //  nombreRecepcionista={nombreRecepcionista}
            nombrePax={nombreCompleto}
            numeroHabitacion={numeroHabitacion}
+           reservaId={reservaId}
           //  nombreRecepcionista = {recepcionista}
           />
         )}
