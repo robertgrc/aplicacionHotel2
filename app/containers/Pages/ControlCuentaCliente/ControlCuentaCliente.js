@@ -30,7 +30,7 @@ const ControlCuentaCliente = () => {
       const getComandas = async (id) => {
         try {
           const response = await hotelApi.get(`comandas/${id}`);
-          console.log(response.data);
+          console.log("RespuestaData***",response.data);
           // console.log(response.data.comandas.comandasFrigobar);
           setComandas(response.data.comandas);
         } catch (error) {
@@ -48,7 +48,8 @@ useEffect(() => {
     comandas.comandasFrigobar,
     comandas.comandasRestaurante,
     comandas.comandasConsumoCliente,
-    comandas.comandasLavanderia
+    comandas.comandasLavanderia,
+    comandas.abonosCliente
   ];
 
   const detalleConsumo = comandasArrays.map((comandasArray) => {
