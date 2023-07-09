@@ -21,7 +21,7 @@ const ControlCuentaCliente = () => {
   const [totalCreditoItems, setTotalCreditoItems] = useState(0);
   const [cuantaPaxDetalle, setCuentaPaxDetalle] = useState([]);
   const [mostrarComponenteAgregarAbono, setMostrarComponenteAgregarAbono] = useState(false);
-
+  const [totalSaldo, setTotalSaldo] = useState(0);
     console.log('Comandas:', comandas);
     //*----
     const { reservaId } = useParams();
@@ -101,6 +101,21 @@ useEffect(() => {
           });
 
           return [...productosCaballeros, ...productosDamas];
+        } 
+        else if (comandasArray && comandasArray[0].abono) {
+          return comandasArray.map((abono) => {
+            const fechaObjeto = new Date(abono.fechaActual);
+            const fechaFormateada = `${fechaObjeto.getDate()}/${fechaObjeto.getMonth() + 1}/${fechaObjeto.getFullYear()}`;
+      
+            return {
+              fecha: fechaFormateada,
+              detalle: abono.detalleAbono,
+              precio: abono.abono,
+              cantidad: 1,
+              credito: 0,
+              abono: abono.abono // Agregar propiedad abono para identificar abonos
+            };
+          });
         } else {
           return [];
         }
@@ -121,12 +136,16 @@ useEffect(() => {
   setDetalleComandas(detalleConsumo);
 
   const totalCreditoCalculado = detalleConsumoOrdenado.reduce((acumulado, dato) => acumulado + dato.credito, 0);
-  setTotalCreditoItems(totalCreditoCalculado);
+  const totalAbonos = detalleConsumoOrdenado.reduce((acumulado, dato) => acumulado + (dato.abono || 0), 0); // Sumar los abonos
+  setTotalCreditoItems(totalCreditoCalculado - totalAbonos);
+  const saldoCalculado = totalMonto - (totalConsumo + totalCreditoCalculado + totalAbonos); // Restar los abonos al saldo
+  setTotalSaldo(saldoCalculado);
 }, [
   comandas.comandasFrigobar,
   comandas.comandasRestaurante,
   comandas.comandasConsumoCliente,
-  comandas.comandasLavanderia
+  comandas.comandasLavanderia,
+  comandas.abonosCliente
 ]);
 //* ----- 3
 
@@ -136,7 +155,7 @@ useEffect(() => {
     comandas.comandasFrigobar,
     comandas.comandasRestaurante,
     comandas.comandasConsumoCliente,
-    comandas.comandasLavanderia
+    comandas.comandasLavanderia,
   ];
 
   const tipoComandas = [
@@ -187,12 +206,11 @@ useEffect(() => {
   });
 
   setCuentaPaxDetalle(costoTotalPorComanda);
-  // Resto del código...
 }, [
   comandas.comandasFrigobar,
   comandas.comandasRestaurante,
   comandas.comandasConsumoCliente,
-  comandas.comandasLavanderia
+  comandas.comandasLavanderia,
 ]);
 
 console.log('cuentaPaxDetalle:', cuantaPaxDetalle);
@@ -260,7 +278,7 @@ console.log('cuentas***', cuentas);
   // Calcular la sumatoria de la columna "saldo"
   const totalCredito = datosReserva.reduce((acumulado, dato) => acumulado + dato.credito, 0);
   // Calcular la sumatoria de la columna "saldo"
-  const totalSaldo = datosReserva.reduce((acumulado, dato) => acumulado + dato.saldo, 0);
+  const totalSaldoCalculado = datosReserva.reduce((acumulado, dato) => acumulado + dato.saldo, 0);
   // Calcular la sumatoria de la columna "monto"
   const totalMonto = cuentas.reduce((acumulado, dato) => acumulado + dato.monto, 0);
   // fechaActual con formato dd//mm//yy
@@ -314,7 +332,7 @@ console.log('cuentas***', cuentas);
                 <tr key={index}>
                   <td>{dato.fecha}</td>
                   <td>{dato.detalle}</td>
-                  <td>{dato.consumo}</td>
+                  <td>{dato.consumo || dato.abono|| ''}</td>
                   <td>{dato.credito}</td>
                   <td>{dato.saldo}</td>
                   <td>{dato.observaciones}</td>
@@ -325,7 +343,7 @@ console.log('cuentas***', cuentas);
                 <td><strong>Consumo Total del Pasajero</strong></td>
                 <td></td>
                 <td><strong>{totalCreditoItems}</strong></td>
-                <td><strong>{totalSaldo}</strong></td>
+                <td><strong>{totalSaldoCalculado}</strong></td>
                 <td></td>
               </tr>
             </tbody>
